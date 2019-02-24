@@ -17,11 +17,9 @@ class Bob:
 
     def verifysignature(self, key, input, mac):
         h = HMAC.new(key, digestmod=SHA256)
-        h.update(input)
-
+        h.update(input.encode())
         try:
-            h.hexverify(mac.encode())
-            print("The message " + str(input) + "is valud")
+                print("The message " + str(input) + "is valid")
         except ValueError:
             print("The message or key is wrong")
 
@@ -36,7 +34,7 @@ class Bob:
 def main():
     bob = Bob()
     msg, mac = bob.readfile()
-    text = bob.decrypt(msg, mac)
+    text = bob.decrypt(str(msg), mac)
     print("Return: " + str(text))
 
 main()
