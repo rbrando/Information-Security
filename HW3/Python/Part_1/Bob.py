@@ -7,33 +7,32 @@ class Bob:
     def readfile(self):
         file = open("ctext", "rb")
         ctext = file.read()
-        print("readFile - " + ctext.decode())
+        print("readFile - " + str(ctext))
+        file.close()
         return ctext
 
     def decrypt(self, input):
         key = 'feeeecfdekfbvelj'
         key = str.encode(key)
 
-        msg = base64.b64decode(input)
-        iv = msg[:AES.block_size]
+
+        iv = input[:AES.block_size]
+        msg = input[AES.block_size:]
 
         decipher = AES.new(key, AES.MODE_CBC, iv)
-        return self.unpad(decipher.decrypt(msg[AES.block_size:])).decode('utf-8')
+
+
+        return self.unpad(decipher.decrypt(msg))
 
 
     def unpad(self, unpad):
-        unpad = unpad#[:-unpad[-1]]
+        unpad = unpad.rstrip(b"\0")
         return unpad
-
-    def pad(self, padded):
-        str_length = 16 - (len(padded) % 16)
-        padded = padded + bytes([str_length])* str_length
-        return padded
 
 def main():
     bob = Bob()
     msg = bob.readfile()
     text = bob.decrypt(msg)
-    print("Return: " + text)
+    print("Return: " + str(text))
 
 main()

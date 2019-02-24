@@ -8,7 +8,8 @@ class Alice:
     def writefile(self, input):
         file = open("ctext", "wb")
         file.write(input)
-        print("WriteFile - " + input.decode())
+        print("WriteFile - " + str(input))
+        file.close()
 
     def encrypt(self, input):
         key = 'feeeecfdekfbvelj'
@@ -16,26 +17,24 @@ class Alice:
 
         iv = Random.new().read(AES.block_size)
 
-        # Pad input; bytes
-        msg = self.pad(input).encode()
+        # Pad input;
+        msg = self.pad(input)
 
         cipher = AES.new(key, AES.MODE_CBC, iv)
 
         #Encrypt message into base64 and with cipher
-        return base64.b64encode(cipher.encrypt(msg))
+        return iv + cipher.encrypt(msg)
 
 
     def pad(self, padded):
-        str_length = 16 - (len(padded) % 16)
-        padded = padded + (chr(str_length)*str_length)
-        print("padding: " + str(len(padded)))
-        return padded
+        how_many = AES.block_size - len(padded) % AES.block_size
+        return padded + b"\0" * how_many
 
 def main(input):
     alice = Alice()
-    ctext = alice.encrypt(input)
+    ctext = alice.encrypt(input.encode())
     alice.writefile(ctext)
 
 
-enter = input("Enter a message to Encrypt: ")
+enter = input("Please type a message to Encrypt: ")
 main(enter)
